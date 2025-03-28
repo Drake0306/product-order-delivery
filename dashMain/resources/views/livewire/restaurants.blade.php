@@ -1,0 +1,133 @@
+<div>
+    <flux:modal.trigger name="add-profile">
+        <flux:button>Add Restaurants</flux:button>
+    </flux:modal.trigger>
+    
+    
+    <flux:table :paginate="$restaurants">
+        <flux:table.columns>
+            <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'address'" :direction="$sortDirection" wire:click="sort('address')">Address</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'contact_info'" :direction="$sortDirection" wire:click="sort('contact_info')">Contact Info</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'operating_hours'" :direction="$sortDirection" wire:click="sort('operating_hours')">Operating Hours</flux:table.column>
+        </flux:table.columns>
+    
+        <flux:table.rows>
+            @foreach ($restaurants as $item)
+                <flux:table.row :key="$item->id">
+                    <flux:table.cell class="whitespace-nowrap">{{ $item->name }}</flux:table.cell>
+    
+                    {{-- <flux:table.cell>
+                        <flux:badge size="sm" :color="$item->status_color" inset="top bottom">{{ $item->address }}</flux:badge>
+                    </flux:table.cell> --}}
+    
+                    <flux:table.cell variant="strong">{{ $item->address }}</flux:table.cell>
+    
+                    <flux:table.cell variant="strong">{{ $item->contact_info }}</flux:table.cell>
+    
+                    <flux:table.cell variant="strong">{{ $item->operating_hours }}</flux:table.cell>
+    
+                    <flux:table.cell>
+                        <flux:dropdown>
+                            <flux:button icon:trailing="chevron-down">Action</flux:button>
+                            <flux:menu>
+                                <flux:modal.trigger name="edit-profile" wire:click="editRestaurant({{ $item->id }})">
+                                    <flux:menu.item icon="pencil-square">Edit</flux:menu.item>
+                                </flux:modal.trigger>
+                                
+                                <flux:menu.separator />
+                                <flux:modal.trigger name="delete-profile" wire:click="confirmDelete({{ $item->id }})">
+                                    <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
+                                </flux:modal.trigger>
+                            </flux:menu>
+                        </flux:dropdown>
+                    </flux:table.cell>
+                </flux:table.row>
+            @endforeach
+        </flux:table.rows>
+    </flux:table>
+    
+    {{-- Add --}}
+    <flux:modal name="add-profile" variant="flyout">
+        <form wire:submit.prevent="submit">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Create Restaurants</flux:heading>
+                    <flux:text class="mt-2">Add changes to add details.</flux:text>
+                </div>
+
+                {{-- <flux:select label="Choose Tanet" wire:model="tenant_id" variant="listbox" searchable placeholder="Choose tanet...">
+                    <flux:select.option value="1">Photography</flux:select.option>
+                </flux:select> --}}
+
+                <flux:input label="Name" required wire:model="name" placeholder="Your name" />
+
+                <flux:textarea
+                    wire:model="address"
+                    label="Address"
+                    placeholder="Fill the address..."
+                />
+
+                <flux:input label="Contact Info" wire:model="contact_info" placeholder="Contact info" />
+
+                <flux:input label="Operating Hours" wire:model="operating_hours" placeholder="Operating hours" />
+
+                <div class="flex">
+                    <flux:spacer />
+                    <flux:button type="submit" variant="primary">Save changes</flux:button>
+                </div>
+            </div>
+        </form>
+    </flux:modal>
+
+    {{-- Edit --}}
+    <flux:modal name="edit-profile" variant="flyout">
+        <form wire:submit.prevent="updateSubmit">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Edit Restaurants</flux:heading>
+                    <flux:text class="mt-2">Add changes to update details.</flux:text>
+                </div>
+
+                {{-- <flux:select label="Choose Tanet" wire:model="tenant_id" variant="listbox" searchable placeholder="Choose tanet...">
+                    <flux:select.option value="1">Photography</flux:select.option>
+                </flux:select> --}}
+
+                <flux:input label="Name" wire:model="name" placeholder="Your name" />
+
+                <flux:textarea wire:model="address" label="Address" placeholder="Fill the address..." />
+
+                <flux:input label="contact_info" wire:model="contact_info" placeholder="Your name" />
+
+                {{-- <flux:input label="Contact Info" wire:model="contact_info" placeholder="Contact info" /> --}}
+
+                <flux:input label="Operating Hours" wire:model="operating_hours" placeholder="Operating hours" />
+
+                <div class="flex">
+                    <flux:spacer />
+                    <flux:button type="submit" variant="primary">Save changes</flux:button>
+                </div>
+            </div>
+        </form>
+    </flux:modal>
+
+    {{-- Delete --}}
+    <flux:modal name="delete-profile" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Delete project?</flux:heading>
+                <flux:text class="mt-2">
+                    <p>You're about to delete this.</p>
+                    <p>This action cannot be reversed.</p>
+                </flux:text>
+            </div>
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button type="submit" variant="danger" wire:click="deleteRestaurant">Delete project</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+</div>
