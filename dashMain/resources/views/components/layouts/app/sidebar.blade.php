@@ -14,8 +14,8 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="Platform" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
-                    <flux:navlist.item icon="home" :href="route('restaurants')" :current="request()->routeIs('restaurants')" wire:navigate>Restaurants</flux:navlist.item>
+                    <flux:navlist.item icon="circle-stack" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
+                    <flux:navlist.item icon="home-modern" :href="route('restaurants')" :current="request()->routeIs('restaurants')" wire:navigate>Restaurants</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group heading="Demo" expandable :expanded="false">

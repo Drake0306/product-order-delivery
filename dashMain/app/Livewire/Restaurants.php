@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Restaurant;
 use Livewire\WithPagination;
+use Flux\Flux;
 
 class Restaurants extends Component
 {
@@ -12,8 +13,13 @@ class Restaurants extends Component
 
     public $sortBy = 'name';
     public $sortDirection = 'desc';
-    public $name, $address, $contact_info, $operating_hours, $restaurantId, $deleteId;
+    public $name, $address, $contact_info, $operating_hours, $restaurantId, $deleteId, $search = '';
 
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function sort($column) {
         if ($this->sortBy === $column) {
@@ -38,13 +44,27 @@ class Restaurants extends Component
 
     public function render()
     {
-        $restaurants = Restaurant::orderBy($this->sortBy, $this->sortDirection)->paginate(10);
+        $query = Restaurant::query();
+
+        // Apply search filter if search term exists
+        if (!empty($this->search)) {
+            $query->where('name', 'LIKE', '%' . $this->search . '%');
+        }
+
+        // Apply sorting
+        $restaurants = $query->orderBy($this->sortBy, $this->sortDirection)->paginate(10);
+        
         return view('livewire.restaurants', compact('restaurants'));
     }
 
     public function submit()
     {
-        // $this->validate();
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'address' => '',
+            'contact_info' => 'max:255',
+            'operating_hours' => 'max:255'
+        ]);
 
         Restaurant::create([
             'tenant_id' => 1,
@@ -54,18 +74,24 @@ class Restaurants extends Component
             'operating_hours' => $this->operating_hours,
         ]);
 
-        session()->flash('success', 'Message sent successfully!');
-
         $this->reset();
+
+        Flux::toast(
+            variant: 'success',
+            heading: 'Changes saved.',
+            text: 'You can always update this from edit.',
+        );
+
+
     }
     
     public function updateSubmit()
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'address' => 'required|string',
-            'contact_info' => 'required|string',
-            'operating_hours' => 'required|string'
+            'address' => 'string',
+            'contact_info' => 'string|max:255',
+            'operating_hours' => 'string|max:255'
         ]);
 
         $update = Restaurant::findOrFail($this->restaurantId);
@@ -75,9 +101,14 @@ class Restaurants extends Component
         $update->operating_hours = $this->operating_hours;
         $update->save();
 
-        session()->flash('success', 'Message sent successfully!');
 
         $this->reset();
+
+        Flux::toast(
+            variant: 'success',
+            heading: 'Changes updated.',
+            text: 'You can always change anything from edit.',
+        );
     }
 
     public function nextPage() // Automatically go to next page if there are more pages
@@ -114,6 +145,12 @@ class Restaurants extends Component
             $this->deleteId = null; // Reset after deletion
 
             $this->dispatch('modal-close', name: 'delete-profile');
+
+            Flux::toast(
+                variant: 'success',
+                heading: 'Item deleted',
+                text: 'you cant undo this action.',
+            );
         }
     }
 }

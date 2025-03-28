@@ -1,51 +1,69 @@
 <div>
-    <flux:modal.trigger name="add-profile">
-        <flux:button>Add Restaurants</flux:button>
-    </flux:modal.trigger>
-    
-    
-    <flux:table :paginate="$restaurants">
-        <flux:table.columns>
-            <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'address'" :direction="$sortDirection" wire:click="sort('address')">Address</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'contact_info'" :direction="$sortDirection" wire:click="sort('contact_info')">Contact Info</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'operating_hours'" :direction="$sortDirection" wire:click="sort('operating_hours')">Operating Hours</flux:table.column>
-        </flux:table.columns>
-    
-        <flux:table.rows>
-            @foreach ($restaurants as $item)
-                <flux:table.row :key="$item->id">
-                    <flux:table.cell class="whitespace-nowrap">{{ $item->name }}</flux:table.cell>
-    
-                    {{-- <flux:table.cell>
-                        <flux:badge size="sm" :color="$item->status_color" inset="top bottom">{{ $item->address }}</flux:badge>
-                    </flux:table.cell> --}}
-    
-                    <flux:table.cell variant="strong">{{ $item->address }}</flux:table.cell>
-    
-                    <flux:table.cell variant="strong">{{ $item->contact_info }}</flux:table.cell>
-    
-                    <flux:table.cell variant="strong">{{ $item->operating_hours }}</flux:table.cell>
-    
-                    <flux:table.cell>
-                        <flux:dropdown>
-                            <flux:button icon:trailing="chevron-down">Action</flux:button>
-                            <flux:menu>
-                                <flux:modal.trigger name="edit-profile" wire:click="editRestaurant({{ $item->id }})">
-                                    <flux:menu.item icon="pencil-square">Edit</flux:menu.item>
-                                </flux:modal.trigger>
-                                
-                                <flux:menu.separator />
-                                <flux:modal.trigger name="delete-profile" wire:click="confirmDelete({{ $item->id }})">
-                                    <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
-                                </flux:modal.trigger>
-                            </flux:menu>
-                        </flux:dropdown>
-                    </flux:table.cell>
-                </flux:table.row>
-            @endforeach
-        </flux:table.rows>
-    </flux:table>
+    <div class="flex w-full flex-1 flex-col gap-4 rounded-xl">
+        <div class="grid auto-rows-min gap-2 md:grid-cols-4">
+            <div class="relative my-5">
+                <flux:modal.trigger name="add-profile">
+                    <flux:button>Add Restaurants</flux:button>
+                </flux:modal.trigger>
+            </div>
+            <div class="relative my-5">
+                <flux:input 
+                    wire:model.live.debounce.500ms="search" 
+                    kbd="âK" 
+                    icon="magnifying-glass" 
+                    placeholder="Search name..."
+                />
+            </div>
+        </div>
+    </div>
+                
+
+    <div class="relative h-full flex-1 p-[20px] rounded-xl border border-neutral-200 dark:border-neutral-700">
+
+        <flux:table :paginate="$restaurants" wire:sort.lazy="sortBy">
+            <flux:table.columns>
+                <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
+                <flux:table.column sortable :sorted="$sortBy === 'address'" :direction="$sortDirection" wire:click="sort('address')">Address</flux:table.column>
+                <flux:table.column sortable :sorted="$sortBy === 'contact_info'" :direction="$sortDirection" wire:click="sort('contact_info')">Contact Info</flux:table.column>
+                <flux:table.column sortable :sorted="$sortBy === 'operating_hours'" :direction="$sortDirection" wire:click="sort('operating_hours')">Operating Hours</flux:table.column>
+            </flux:table.columns>
+        
+            <flux:table.rows>
+                @foreach ($restaurants as $item)
+                    <flux:table.row :key="$item->id">
+                        <flux:table.cell class="whitespace-nowrap">{{ $item->name }}</flux:table.cell>
+        
+                        {{-- <flux:table.cell>
+                            <flux:badge size="sm" :color="$item->status_color" inset="top bottom">{{ $item->address }}</flux:badge>
+                        </flux:table.cell> --}}
+        
+                        <flux:table.cell variant="strong">{{ $item->address }}</flux:table.cell>
+        
+                        <flux:table.cell variant="strong">{{ $item->contact_info }}</flux:table.cell>
+        
+                        <flux:table.cell variant="strong">{{ $item->operating_hours }}</flux:table.cell>
+        
+                        <flux:table.cell>
+                            <flux:dropdown>
+                                <flux:button icon:trailing="chevron-down">Action</flux:button>
+                                <flux:menu>
+                                    <flux:modal.trigger name="edit-profile" wire:click="editRestaurant({{ $item->id }})">
+                                        <flux:menu.item icon="pencil-square">Edit</flux:menu.item>
+                                    </flux:modal.trigger>
+                                    
+                                    <flux:menu.separator />
+                                    <flux:modal.trigger name="delete-profile" wire:click="confirmDelete({{ $item->id }})">
+                                        <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
+                                    </flux:modal.trigger>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </flux:table.cell>
+                    </flux:table.row>
+                @endforeach
+            </flux:table.rows>
+        </flux:table>
+
+    </div>
     
     {{-- Add --}}
     <flux:modal name="add-profile" variant="flyout">
@@ -60,7 +78,7 @@
                     <flux:select.option value="1">Photography</flux:select.option>
                 </flux:select> --}}
 
-                <flux:input label="Name" required wire:model="name" placeholder="Your name" />
+                <flux:input label="Name" wire:model="name" placeholder="Your name" />
 
                 <flux:textarea
                     wire:model="address"
@@ -130,4 +148,7 @@
             </div>
         </div>
     </flux:modal>
+    {{-- Toast --}}
+    <flux:toast />
+
 </div>
