@@ -28,6 +28,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
     Volt::route('restaurants', 'restaurants')->name('restaurants');
+    Volt::route('categories', 'categories')->name('categories');
+    Volt::route('menus', 'menus')->name('menus');
 });
 
 require __DIR__.'/auth.php';

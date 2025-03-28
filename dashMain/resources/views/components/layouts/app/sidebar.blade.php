@@ -16,6 +16,8 @@
                 <flux:navlist.group heading="Platform" class="grid">
                     <flux:navlist.item icon="circle-stack" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
                     <flux:navlist.item icon="home-modern" :href="route('restaurants')" :current="request()->routeIs('restaurants')" wire:navigate>Restaurants</flux:navlist.item>
+                    <flux:navlist.item icon="bars-3-bottom-right" :href="route('categories')" :current="request()->routeIs('categories')" wire:navigate>Categories</flux:navlist.item>
+                    <flux:navlist.item icon="table-cells" :href="route('menus')" :current="request()->routeIs('menus')" wire:navigate>Menus</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group heading="Demo" expandable :expanded="false">
